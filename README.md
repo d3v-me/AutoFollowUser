@@ -13,7 +13,7 @@
 1. **Install BetterDiscord**: Ensure BetterDiscord is installed on your Discord client. You can download BetterDiscord from the [official website](https://betterdiscord.app/).
 
 2. **Download the Plugin**:
-   - Download the `AutoFollowSingleUser.plugin.js` file from the [GitHub repository](https://github.com/d3v-me/BetterDiscord/AutoFollowUser/).
+   - Download the `AutoFollowSingleUser.plugin.js` file from the [GitHub repository](https://github.com/d3v-me/AutoFollowUser).
 
 3. **Place the Plugin**:
    - Move the `.js` file to the BetterDiscord plugins folder:
@@ -48,7 +48,7 @@ No additional configuration is required. The plugin works immediately after acti
 
 ## Contributing
 
-If you want to contribute to the development of this plugin, feel free to submit issues or pull requests on the [GitHub repository](https://github.com/d3v-me/BetterDiscord/AutoFollowUser/FollowUser.plugin.js). Any help is appreciated!
+If you want to contribute to the development of this plugin, feel free to submit issues or pull requests on the [GitHub repository](https://github.com/d3v-me/AutoFollowUser/blob/main/FollowUser.plugin.js). Any help is appreciated!
 
 ## License
 
