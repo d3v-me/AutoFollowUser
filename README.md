@@ -8,6 +8,8 @@
 - Option to follow or unfollow a user via the context menu.
 - just right click on the user and enable follow user at the bottom of the menu
 - Supports only one user being followed at a time.
+  
+![image](https://github.com/user-attachments/assets/f1309c87-0333-47b8-a7db-b14c06858b8f)
 
 ## Installation
 
