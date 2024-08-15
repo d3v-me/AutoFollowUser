@@ -53,10 +53,6 @@ No additional configuration is required. The plugin works immediately after acti
 
 If you want to contribute to the development of this plugin, feel free to submit issues or pull requests on the [GitHub repository](https://github.com/d3v-me/AutoFollowUser/blob/main/FollowUser.plugin.js). Any help is appreciated!
 
-## License
-
-This plugin is distributed under the MIT License.
-
 ---
 
 **Note**: The use of this plugin may be subject to Discord’s and BetterDiscord’s terms of service. Use it responsibly.
