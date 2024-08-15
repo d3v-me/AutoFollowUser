@@ -2,13 +2,14 @@
  * @name AutoFollowUser
  * @author d3v.me
  * @description This BetterDiscord plugin lets you automatically follow your friends when they enter a voice chat room.
- * @version 1.1.2
+ * @version 1.1.3
  */
 
-module.exports = class AutoFollowSingleUser {
+module.exports = class AutoFollowUser {
     constructor() {
-        this.followingUser = null; 
-        this.interval = null; 
+        this.followingUser = null;
+        this.followInterval = null;
+        this.patched = false;
     }
 
     start() {
@@ -17,22 +18,28 @@ module.exports = class AutoFollowSingleUser {
 
     stop() {
         this.unpatchUserContextMenu();
-        this.clearInterval(); 
+        this.clearFollowInterval();
     }
 
     patchUserContextMenu() {
-        BdApi.ContextMenu.patch('user-context', this.handleUserContextMenu);
+        if (!this.patched) {
+            BdApi.ContextMenu.patch('user-context', this.handleUserContextMenu);
+            this.patched = true;
+        }
     }
 
     unpatchUserContextMenu() {
-        BdApi.ContextMenu.unpatch('user-context', this.handleUserContextMenu);
+        if (this.patched) {
+            BdApi.ContextMenu.unpatch('user-context', this.handleUserContextMenu);
+            this.patched = false;
+        }
     }
 
     handleUserContextMenu = (menu, { user }) => {
-       
+        const isFollowing = this.followingUser === user.id;
         const followUserOption = BdApi.React.createElement(BdApi.ContextMenu.Item, {
             id: `auto-follow-user-${user.id}`,
-            label: this.followingUser === user.id ? 'Ne plus suivre cet utilisateur' : 'Suivre cet utilisateur',
+            label: isFollowing ? 'UnFollow this user ❌' : 'Follow this user ✅',
             action: () => this.toggleFollowUser(user.id),
         });
 
@@ -41,37 +48,46 @@ module.exports = class AutoFollowSingleUser {
 
     toggleFollowUser(userId) {
         if (this.followingUser === userId) {
-         
-            this.followingUser = null;
-            this.clearInterval();
+            this.stopFollowingUser();
         } else {
-       
             if (this.followingUser) {
-                this.clearInterval();
+                this.stopFollowingUser();
             }
-
-            this.followingUser = userId;
-            this.startUserInterval();
+            this.startFollowingUser(userId);
         }
     }
 
-    startUserInterval() {
+    startFollowingUser(userId) {
+        this.followingUser = userId;
+        this.startFollowInterval();
+    }
+
+    stopFollowingUser() {
+        this.followingUser = null;
+        this.clearFollowInterval();
+    }
+
+    startFollowInterval() {
         const VoiceStateStore = BdApi.findModuleByProps('getVoiceStateForUser');
         const VoiceChannelStore = BdApi.findModuleByProps('selectVoiceChannel');
 
-        this.interval = setInterval(() => {
+        if (!VoiceStateStore || !VoiceChannelStore) {
+            console.error("Required modules not found");
+            return;
+        }
+
+        this.followInterval = setInterval(() => {
             const userVoiceState = VoiceStateStore.getVoiceStateForUser(this.followingUser);
             if (userVoiceState && userVoiceState.channelId) {
-                const currentChannelId = userVoiceState.channelId;
-                VoiceChannelStore.selectVoiceChannel(currentChannelId);
+                VoiceChannelStore.selectVoiceChannel(userVoiceState.channelId);
             }
         }, 1000);
     }
 
-    clearInterval() {
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
+    clearFollowInterval() {
+        if (this.followInterval) {
+            clearInterval(this.followInterval);
+            this.followInterval = null;
         }
     }
 };
