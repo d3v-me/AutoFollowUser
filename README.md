@@ -9,7 +9,7 @@
 - just right click on the user and enable follow user at the bottom of the menu
 - Supports only one user being followed at a time.
   
-![image](https://github.com/user-attachments/assets/f1309c87-0333-47b8-a7db-b14c06858b8f)
+![image](https://github.com/user-attachments/assets/77b0a521-c178-4793-a1f1-0b2119abd9d0)
 
 ## Installation
 
