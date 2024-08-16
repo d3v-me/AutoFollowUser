@@ -1,90 +1,71 @@
 /**
  * @name AutoFollowUser
  * @author d3v.me
- * @description This BetterDiscord plugin lets you automatically follow your friends when they enter a voice chat room.
- * @version 1.1.3
+ * @description Ce plugin BetterDiscord vous permet de suivre automatiquement vos amis lorsqu'ils entrent dans un salon vocal.
+ * @version 1.1.2
  */
 
 module.exports = class AutoFollowUser {
     constructor() {
-        this.followingUser = null;
-        this.followInterval = null;
-        this.patched = false;
+        this.currentUser = null; 
+        this.followInterval = null; 
     }
 
     start() {
-        this.patchUserContextMenu();
+        this.applyUserContextMenuPatch();
     }
 
     stop() {
-        this.unpatchUserContextMenu();
-        this.clearFollowInterval();
+        this.removeUserContextMenuPatch();
+        this.stopFollowInterval(); 
     }
 
-    patchUserContextMenu() {
-        if (!this.patched) {
-            BdApi.ContextMenu.patch('user-context', this.handleUserContextMenu);
-            this.patched = true;
-        }
+    applyUserContextMenuPatch() {
+        BdApi.ContextMenu.patch('user-context', this.modifyUserContextMenu);
     }
 
-    unpatchUserContextMenu() {
-        if (this.patched) {
-            BdApi.ContextMenu.unpatch('user-context', this.handleUserContextMenu);
-            this.patched = false;
-        }
+    removeUserContextMenuPatch() {
+        BdApi.ContextMenu.unpatch('user-context', this.modifyUserContextMenu);
     }
 
-    handleUserContextMenu = (menu, { user }) => {
-        const isFollowing = this.followingUser === user.id;
-        const followUserOption = BdApi.React.createElement(BdApi.ContextMenu.Item, {
+    modifyUserContextMenu = (menu, { user }) => {
+        const followOption = BdApi.React.createElement(BdApi.ContextMenu.Item, {
             id: `auto-follow-user-${user.id}`,
-            label: isFollowing ? 'UnFollow this user ❌' : 'Follow this user ✅',
-            action: () => this.toggleFollowUser(user.id),
+            label: this.currentUser === user.id ? 'Ne plus suivre cet utilisateur ❌' : 'Suivre cet utilisateur ✅',
+            action: () => this.toggleUserFollow(user.id),
         });
 
-        menu.props.children.push(followUserOption);
+        menu.props.children.push(followOption);
     };
 
-    toggleFollowUser(userId) {
-        if (this.followingUser === userId) {
-            this.stopFollowingUser();
+    toggleUserFollow(userId) {
+        if (this.currentUser === userId) {
+            this.currentUser = null;
+            this.stopFollowInterval();
         } else {
-            if (this.followingUser) {
-                this.stopFollowingUser();
+            if (this.currentUser) {
+                this.stopFollowInterval();
             }
-            this.startFollowingUser(userId);
+
+            this.currentUser = userId;
+            this.startFollowInterval();
         }
-    }
-
-    startFollowingUser(userId) {
-        this.followingUser = userId;
-        this.startFollowInterval();
-    }
-
-    stopFollowingUser() {
-        this.followingUser = null;
-        this.clearFollowInterval();
     }
 
     startFollowInterval() {
         const VoiceStateStore = BdApi.findModuleByProps('getVoiceStateForUser');
         const VoiceChannelStore = BdApi.findModuleByProps('selectVoiceChannel');
 
-        if (!VoiceStateStore || !VoiceChannelStore) {
-            console.error("Required modules not found");
-            return;
-        }
-
         this.followInterval = setInterval(() => {
-            const userVoiceState = VoiceStateStore.getVoiceStateForUser(this.followingUser);
+            const userVoiceState = VoiceStateStore.getVoiceStateForUser(this.currentUser);
             if (userVoiceState && userVoiceState.channelId) {
-                VoiceChannelStore.selectVoiceChannel(userVoiceState.channelId);
+                const channelId = userVoiceState.channelId;
+                VoiceChannelStore.selectVoiceChannel(channelId);
             }
         }, 1000);
     }
 
-    clearFollowInterval() {
+    stopFollowInterval() {
         if (this.followInterval) {
             clearInterval(this.followInterval);
             this.followInterval = null;
