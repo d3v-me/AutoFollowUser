@@ -31,7 +31,7 @@ module.exports = class AutoFollowUser {
     modifyUserContextMenu = (menu, { user }) => {
         const followOption = BdApi.React.createElement(BdApi.ContextMenu.Item, {
             id: `auto-follow-user-${user.id}`,
-            label: this.currentUser === user.id ? 'Ne plus suivre cet utilisateur ❌' : 'Suivre cet utilisateur ✅',
+            label: this.currentUser === user.id ? 'UnFollow this user ❌' : 'Follow this user ✅',
             action: () => this.toggleUserFollow(user.id),
         });
 
