@@ -26,7 +26,7 @@
 
 4. **Enable the Plugin**:
    - Open Discord, go to BetterDiscord settings (via the gear icon at the bottom left), then click on "Plugins".
-   - Enable the `AutoFollowSingleUser` plugin from the list of available plugins.
+   - Enable the `AutoFollowUser` plugin from the list of available plugins.
 
 ## Usage
 
